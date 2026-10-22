@@ -16,10 +16,17 @@ const problems = readdirSync(problemsDir, { withFileTypes: true })
     const directory = resolve(problemsDir, entry.name);
     const problem: Problem = parse(readFileSync(resolve(directory, "problem.yaml"), "utf8"));
     const solution = readFileSync(resolve(directory, "solution.txt"), "utf8");
-    return { problem, solution };
+    const alternativesFile = resolve(directory, "alternatives.yaml");
+    const alternatives: readonly Alternative[] = existsSync(alternativesFile)
+      ? parse(readFileSync(alternativesFile, "utf8")) ?? []
+      : [];
+    return { problem, solution, alternatives };
   });
 
 if (problems.length === 0) throw new Error("no problems found");
+
+// Solutions known from the original site, with the outcome recorded for the pinned judge (problems repo alternatives.yaml).
+type Alternative = { readonly code: string; readonly source: string; readonly expected: "accepted" | "rejected"; readonly reason?: string };
 
 async function judge(request: JudgeRequest): Promise<JudgeResponse> {
   const response = await fetch(`${judgeUrl.replace(/\/$/, "")}/judge`, {
@@ -51,6 +58,19 @@ describe("references", { concurrent: false }, () => {
     }, 45_000);
   }
 });
+
+const alternatives = problems.flatMap(({ problem, alternatives: list }) => list.map((alternative, index) => ({ problem, alternative, index })));
+if (alternatives.length > 0) {
+  describe("alternatives", { concurrent: false }, () => {
+    for (const { problem, alternative, index } of alternatives) {
+      test(`${problem.slug} #${index + 1} ${alternative.expected}`, async () => {
+        const source = buildSource(problem.source ?? problem.skeleton, alternative.code);
+        const result = await judge({ source, ...(problem.flags ? { flags: problem.flags } : {}) });
+        expect(accepted(problem, result)).toBe(alternative.expected === "accepted");
+      }, 45_000);
+    }
+  });
+}
 
 describe("probes", { concurrent: false }, () => {
   test("wrong-answer", async () => {
