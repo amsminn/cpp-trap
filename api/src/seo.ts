@@ -204,7 +204,7 @@ export async function llms(c: SeoContext): Promise<Response> {
   const origin = new URL(c.req.url).origin;
   const problems = await loadProblems(c.env);
   const body = `# ${SITE_NAME}\n\n> ${ABOUT_INTRO} ${HOME_LEAD} Also known as ${SITE_ALTERNATE_NAMES.join(", ")}.\n\n`
-    + `${ABOUT_CREDITS} Every submission is compiled with GCC 13 on x86-64 Linux and run in a sandbox; a problem is solved when the program calls victory().\n\n`
+    + `${ABOUT_CREDITS} Every submission is compiled with GCC 4.9 in strict C++11 mode on x86-64 Linux and run in a sandbox; a problem is solved when the program calls victory().\n\n`
     + `## Problems\n\n${problems.map((problem) => `- [#${problem.number} ${problem.title}](${origin}/p/${problem.number}): ${problem.statement}`).join("\n")}\n\n`
     + `## Pages\n\n- [Problems](${origin}/): the list of all problems\n- [Leaderboard](${origin}/ranking): players ranked by problems solved\n- [About](${origin}/about): credits, judge environment and privacy\n`;
   return c.text(body, 200, { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" });

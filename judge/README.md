@@ -5,15 +5,19 @@ The deployment target is linux/amd64.
 Node base: `node:22-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392`.
 Ubuntu base: `ubuntu:24.04@sha256:68ee22004a9109b44973313b02ff7b1de250f1de0f5ecb628d73f579aaff33ac`.
 APT snapshot: `20261001T000000Z` (noble, noble-updates, noble-security).
-Pinned packages: g++-13 `13.3.0-6ubuntu2~24.04.1`, util-linux `2.39.3-9ubuntu6.6`,
+Compiler: GCC 4.9.4 copied from `gcc:4.9@sha256:6356ef8b29cc3522527a85b6c58a28626744514bea87a10ff2bf67599a7474f5` into `/opt/gcc-4.9` (`/usr/bin/g++` links to it);
+it uses the image's binutils and glibc 2.39 headers/crt files. This matches the inferred original Security Traps
+judge (Linux x86-64, glibc, GCC 4.x, `-O0`, strict C++11, no stack protector); see `docs/operations.md`.
+Pinned packages: binutils `2.42-4ubuntu2.10`, libc6-dev `2.39-0ubuntu8.9`, util-linux `2.39.3-9ubuntu6.6`,
 procps `2:4.0.4-4ubuntu3.3`, tini `0.19.0-1`, bubblewrap `0.9.0-1ubuntu0.3`.
-`g++ --version`: `g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0`.
+`g++ --version`: `g++ (GCC) 4.9.4`.
 Docker Desktop linux/amd64 probe: tier C exits 1 (mounting proc: Operation not permitted);
 tier B is selected. `/health` reports `sandbox:"B", oomProtected:false` on this host.
 Local Apple Silicon QA uses `--platform linux/arm64` because Rosetta cannot run under RLIMIT_AS; amd64 is validated in CI.
 
-BASE_FLAGS: `-std=gnu++17 -O0 -fno-stack-protector -no-pie -fcf-protection=none -fno-unreachable-traps -w -fmax-errors=5`.
-The fallthrough flag preserves legacy non-void function behavior required by the recovered references.
+BASE_FLAGS: `-std=c++11 -O0 -fno-stack-protector -w -fmax-errors=5`.
+GCC 4.9 is non-PIE and emits no CET instrumentation by default, and falls off the end of a non-void function
+without a trap, which puzzles #4, #5, #13 and #14 rely on. Strict C++11 translates trigraphs (`??/`, `??=`, ...).
 Compile limits: CPU 10:11 s, AS 805306368 bytes, NPROC 32, FSIZE 33554432 bytes,
 NOFILE 256, CORE 0; wall 15 s; diagnostics capped at 64 KiB (kill), response 8 KiB.
 Run limits: CPU 2:3 s, AS 100663296 bytes, NPROC 8, FSIZE 1048576 bytes,

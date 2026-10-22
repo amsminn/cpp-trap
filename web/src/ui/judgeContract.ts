@@ -8,8 +8,8 @@ import { BASE_FLAGS } from "@cpp-trap/shared";
  */
 export { BASE_FLAGS };
 
-/** `g++ --version` inside the image: g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0 on ubuntu:24.04. */
-export const JUDGE_COMPILER = "g++ 13.3.0 (Ubuntu 24.04)";
+/** `g++ --version` inside the image: g++ (GCC) 4.9.4, from the official gcc:4.9 image, on ubuntu:24.04 (glibc 2.39). */
+export const JUDGE_COMPILER = "g++ 4.9.4 (x86-64 Linux, glibc)";
 
 /** The language standard the judge compiles with: the leading BASE_FLAGS entry, which the type check keeps a -std= flag. */
 export const LANGUAGE_FLAG = BASE_FLAGS[0] satisfies `-std=${string}`;
