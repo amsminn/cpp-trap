@@ -1,0 +1,221 @@
+.problem-secondary {
+  min-inline-size: 0;
+}
+
+.problem-secondary .state-view {
+  overflow-wrap: anywhere;
+}
+.shortest-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.shortest-list > li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-inline-size: 0;
+}
+.shortest-list .who { min-inline-size: 0; }
+.shortest-login { overflow-wrap: anywhere; }
+
+/* Input rules (V027/V032): one chip per rule in plain words; banned substrings are separate code tokens, never a prose run. */
+.rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  max-inline-size: var(--measure);
+}
+.rules li {
+  min-inline-size: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) 10px; /* the chip box of .chips span (styles.css) */
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+.rules-banned {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+.rules code {
+  font-size: var(--text-sm);
+  white-space: pre;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--bg);
+}
+
+/* Code slot label (V040): a visible, persistent label above the skeleton; the required note states the prerequisite. */
+.ed-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-3) var(--space-4) 0;
+  font-size: var(--text-sm);
+  color: var(--editor-muted);
+}
+.ed-label label {
+  color: var(--editor-fg);
+  font-weight: 600;
+  cursor: pointer;
+}
+.ed .ed-label + pre {
+  padding-block-start: var(--space-2);
+}
+
+/* Human-check lifecycle (V046/V047/V094): the status/retry row reserves a phone-sized target in every state, so a
+   failed or expired check can recover without moving the editor footer. The provider host footprint remains selected
+   by the shared container rule (flexible at >=300px, compact below it). */
+.ed .verification-frame {
+  min-block-size: calc(var(--widget-regular-h) + var(--space-2) + 3lh);
+}
+.ed .verification-frame .turnstile { line-height: 0; }
+.ed .human-check-status {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  block-size: 3lh;
+  overflow: auto;
+}
+.ed .human-check-status [role="status"] {
+  min-block-size: 1lh;
+  overflow-wrap: anywhere;
+}
+.ed .human-check-retry {
+  min-block-size: var(--target-min);
+  min-inline-size: var(--target-min);
+  border: 1px solid var(--editor-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  color: var(--editor-fg);
+  font: inherit;
+  cursor: pointer;
+}
+.ed .human-check-retry:hover { background: var(--editor-border); }
+.ed .human-check-retry:active { transform: translateY(1px); }
+@container (width < 300px) {
+  .ed .verification-frame {
+    min-block-size: calc(var(--widget-compact-h) + var(--space-2) + 3lh);
+  }
+}
+
+/* Offending-character diagnostics (V027): the glyph and its printable replacement sit in their own boxes. */
+.ed-foot .glyph {
+  padding: 0 var(--space-1);
+  border: 1px solid var(--editor-border);
+  border-radius: var(--radius-xs);
+  white-space: pre;
+}
+
+/* Composition first (V035): the problem route's main is the shared .editor-layout grid (styles.css). The loading
+   silhouette mirrors the ready split: the chips that now live in the statement card stay out of the comparison card. */
+.editor-secondary > .placeholder > .chips { display: none; }
+.editor-secondary > .placeholder > h2 { margin-block-start: 0; }
+
+/* Validation area (V041): a three-line box in the footer, so the primary action keeps its place while the checks
+   change; longer diagnostics scroll inside it. The box keeps the shared 4.5em floor; three line boxes are taller. */
+.ed .ed-checks {
+  block-size: 3lh;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.ed .ed-checks-text { display: block; } /* a block so the overflow observer sees its size */
+.ed .ed-checks:focus-visible { outline-offset: var(--focus-offset); }
+/* The footer's place in the panel while it is docked above a virtual keyboard: the anchor keeps the footer's height. */
+.ed .ed-foot-anchor { min-inline-size: 0; }
+.ed .ed-foot--docked {
+  position: fixed;
+  z-index: 2;
+  background: var(--editor-bg);
+  border-top: 1px solid var(--editor-border);
+}
+/* Actions never clip (V036): a label that does not fit its line wraps instead of widening the footer. */
+.ed .ed-foot .btn { white-space: normal; max-inline-size: 100%; text-align: center; }
+.ed .ed-foot .btn[aria-disabled="true"] { cursor: not-allowed; }
+.ed .ed-login { min-inline-size: 0; }
+.ed .ed-submit-reason { min-block-size: var(--target-min); display: flex; align-items: center; }
+.ed-con summary {
+  min-block-size: var(--target-min);
+  display: flex;
+  align-items: center;
+}
+/* Native code fields (V038/V039): the field is sized from its own text, not a character count. The box's hidden
+   ::after replicates the value (or the placeholder) with the field's font, spacing and padding, so the box takes the
+   text's real width and height, letter-spacing, word-spacing and line-height overrides included, and the native field
+   fills the box. A single line is centred in the 44px touch floor (U41) that holds in both directions at every width;
+   the trailing space keeps room for the caret after the last glyph and counts a final newline as a line. */
+.ed .slot-box {
+  --slot-pad-block: max(0px, calc((var(--target-min) - 1lh) / 2));
+  --slot-pad-inline: 3px; /* the field's inline padding (styles.css .slot) */
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  min-inline-size: var(--target-min);
+  min-block-size: var(--target-min);
+}
+.ed .slot-box::after {
+  content: attr(data-value) " ";
+  display: block;
+  box-sizing: border-box; /* the universal reset matches elements only; the cap below includes the padding like the field's */
+  visibility: hidden;
+  white-space: pre;
+  padding: var(--slot-pad-block) var(--slot-pad-inline);
+}
+.ed .slot-box > .slot {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding-block: var(--slot-pad-block);
+}
+/* A dashed invalid outline remains distinct without colour and does not change field geometry. */
+.ed .slot[aria-invalid="true"] {
+  outline: 2px dashed var(--editor-bad);
+  outline-offset: 0;
+}
+@media (forced-colors: active) {
+  .ed .slot[aria-invalid="true"] { outline-color: CanvasText; }
+}
+/* Multiline field growth (V041): at most half of the current visual viewport (the panel publishes --visual-height
+   from visualViewport while mounted); the box's replica is capped and clipped, so the field keeps native local
+   scrolling for the rest. */
+.ed .slot-box--multiline::after { max-block-size: calc(var(--visual-height, 100svh) / 2); overflow: hidden; }
+/* The loading silhouette's slot stand-in keeps the same touch floor, so the real slot and action land where it did. */
+.ed.placeholder .slot { min-block-size: var(--target-min); }
+/* The skeleton keeps one hint line below itself while it fits, so a draft wide enough to need the sideways hint
+   (styles.css .scroll-hint, one text-sm line plus its bottom padding) does not move the checks and the action. */
+.ed > .scroll-region:not(:has(+ .scroll-hint)) { padding-block-end: calc(var(--space-4) + var(--text-sm) * var(--leading) + var(--space-3)); }
+/* The pending/error statement silhouette shares the ready prose and rules flow; status/recovery overlays its first
+   line instead of adding height. The editor silhouette uses the ready label, checks and lifecycle classes above. */
+.editor-primary .state-frame--problem:has(.rules.placeholder) { min-block-size: 0; }
+.editor-primary .statement-slot:has(.placeholder) { display: grid; min-block-size: 0; }
+.editor-primary .statement-slot > .placeholder { grid-area: 1 / 1; margin: 0; }
+.editor-primary .statement-slot:has(.placeholder) > .state-view { grid-area: 1 / 1; align-self: start; background: var(--card); }
+
+/* Phone footer (V036): checks above the action, each on the full width; the action keeps the 44px floor. */
+@media (max-width: 600px) {
+  .ed .ed-foot { flex-direction: column; align-items: stretch; }
+  .ed .ed-foot .ed-checks { flex: 0 0 auto; }
+}
+
+/* Finished verdict (Editor Console "done"): a tinted banner so the outcome reads at a glance. */
+.ed .verdict-banner { display: grid; gap: var(--space-1); margin: 0; padding: var(--space-3); border: 1px solid currentColor; border-radius: var(--radius-sm); font-family: var(--font-ui); font-size: var(--text-md); color: var(--editor-fg); }
+.ed .verdict-banner-label { font-size: var(--text-xl); font-weight: 700; line-height: 1.2; }
+.ed .verdict-banner--ok { border-color: var(--editor-ok); background: #12261c; }
+.ed .verdict-banner--ok .verdict-banner-label { color: var(--editor-ok); }
+.ed .verdict-banner--bad { border-color: var(--editor-bad); background: #2a1215; }
+.ed .verdict-banner--bad .verdict-banner-label { color: var(--editor-bad); }
+.ed .verdict-banner--warn { border-color: var(--editor-warn); background: #2a2111; }
+.ed .verdict-banner--warn .verdict-banner-label { color: var(--editor-warn); }
+.ed .verdict-banner + p { margin-top: var(--space-2); }
+@media (forced-colors: active) { .ed .verdict-banner { border-color: CanvasText; background: Canvas; } }

@@ -1,0 +1,12 @@
+{
+  "name": "cpp-trap",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "packageManager": "pnpm@12.14.0",
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm --filter @cpp-trap/shared test",
+    "e2e": "pnpm --filter @cpp-trap/e2e test"
+  },
+  "devDependencies": { "wrangler": "4.151.1" }
+}

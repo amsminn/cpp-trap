@@ -1,0 +1,9 @@
+{
+  "name": "@cpp-trap/judge",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": { "@cpp-trap/shared": "workspace:*" },
+  "devDependencies": { "typescript": "7.0.2", "@types/node": "26.6.5" }
+}

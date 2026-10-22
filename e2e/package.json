@@ -1,0 +1,9 @@
+{
+  "name": "@cpp-trap/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "typecheck": "tsc --noEmit", "test": "vitest run" },
+  "dependencies": { "@cpp-trap/shared": "workspace:*" },
+  "devDependencies": { "vitest": "5.0.5", "yaml": "2.9.1", "typescript": "7.0.2" }
+}

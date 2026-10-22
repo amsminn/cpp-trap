@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+.git
+.wrangler
+**/.wrangler
+dist
+**/dist
+web
+e2e
+*.log
+**/*.log
+.dev.vars
+**/.dev.vars

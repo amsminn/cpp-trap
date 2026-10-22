@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule: {interval: monthly}
+    open-pull-requests-limit: 0
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: {interval: monthly}
+    open-pull-requests-limit: 0
+  - package-ecosystem: docker
+    directory: /judge
+    schedule: {interval: monthly}
+    open-pull-requests-limit: 0
+    # APT/g++ pins are not a supported Dependabot ecosystem.
+    # Keep the compiler's Ubuntu base (including its digest) pinned as well.
+    ignore:
+      - dependency-name: ubuntu

@@ -1,0 +1,538 @@
+/* Design tokens for the W3 "modern web" layout (research/design-refs/mockups/mockup-W3.html). */
+
+@font-face { font-family: Inter; font-weight: 400; font-display: swap; src: url(/fonts/inter-400.woff2) format("woff2"); }
+@font-face { font-family: Inter; font-weight: 500; font-display: swap; src: url(/fonts/inter-500.woff2) format("woff2"); }
+@font-face { font-family: Inter; font-weight: 600; font-display: swap; src: url(/fonts/inter-600.woff2) format("woff2"); }
+@font-face { font-family: Inter; font-weight: 700; font-display: swap; src: url(/fonts/inter-700.woff2) format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap; src: url(/fonts/jetbrains-mono-400.woff2) format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 600; font-display: swap; src: url(/fonts/jetbrains-mono-600.woff2) format("woff2"); }
+
+:root {
+  /* light surfaces */
+  --bg: #f6f7f9;
+  --card: #fff;
+  --border: #e6e8eb;
+  --line: #f0f1f3;
+  --fg: #1f2328;
+  --fg-muted: #57606a;
+  --fg-faint: #57606a; /* merged with --fg-muted on purpose (V004): #8b949e measured 3.08:1 on white */
+  --accent: #e5484d; /* logo accent only (U16) */
+  --link: #0969da;
+  --ok: #1a7f37;
+  --bad: #cf222e;
+  --warn: #7d4e00; /* light-surface warning tone (V075); the editor keeps --editor-warn */
+  --tag-bg: #eef2ff;
+  --tag-fg: #4f46e5;
+  --solved-bg: #ecfdf3;
+  --solved-fg: #067647;
+
+  /* dark editor panel */
+  --editor-bg: #0d1117;
+  --editor-border: #30363d;
+  --editor-fg: #e6edf3;
+  --editor-muted: #8b949e;
+  --editor-ok: #3fb950;
+  --editor-bad: #f85149;
+  --editor-warn: #d29922;
+  --slot-bg: rgb(31 111 235 / 20%);
+  --slot-bg-hover: rgb(31 111 235 / 32%);
+  --slot-outline: #388bfd;
+  --editor-link: #58a6ff; /* inline links on the dark panel: 7.9:1 on --editor-bg (the light --link is 3.3:1 there) */
+
+  /* shared controls: the enabled green is the W3 button; hover/active only darken it so white text stays >= 4.5:1
+     (V051). Disabled controls use the light pair below; inside the editor they use --editor-border/--editor-fg (V054). */
+  --btn: #238636;
+  --btn-hover: #146c2e;
+  --btn-active: #115c27;
+  --btn-disabled: #e6e8eb;
+  --btn-disabled-fg: #57606a;
+  --danger: #cf222e;
+  --danger-hover: #a40e26;
+  --danger-active: #82071e;
+
+  /* type: rem so the ramp follows the browser default size and zoom (V030); no root font-size is set.
+     At the 16px default: xs/sm 13px, md 14px, lg 17px, xl 22px, base 16px. */
+  --font-ui: Inter, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --text-xs: .8125rem;
+  --text-sm: .8125rem;
+  --text-md: .875rem;
+  --text-lg: 1.0625rem;
+  --text-xl: 1.375rem;
+  --text-base: 1rem;
+  --leading: 1.6;
+  --leading-code: 1.7;
+
+  /* shape and spacing */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 3px;
+  --radius-pill: 99px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --nav-h: 56px;
+  --max-w: 1280px;
+
+  /* interaction: minimum hit size and focus ring (editor focus uses --slot-outline) */
+  --target-min: 44px;
+  --focus-width: 2px;
+  --focus-offset: 2px;
+  --focus-color: #0969da;
+
+  /* reading measure (U06): prose and lists stay within roughly 80 characters per line */
+  --measure: 72ch;
+
+  /* reserved geometry derived from the shared table/solution metrics, so loading frames (todo 9) match ready content:
+     a header row, a data row, and one solution (h3 + code block) at the standard 16px browser default. */
+  --table-head-h: calc(var(--text-sm) * var(--leading) + 2 * var(--space-2) + 1px);
+  --table-row-h: calc(var(--text-md) * var(--leading) + 2 * var(--space-2) + 1px);
+  --statement-size: var(--text-md);
+  --solution-code-size: var(--text-sm);
+  --solution-row-h: calc(var(--space-5) + var(--text-lg) * var(--leading) + var(--space-2) + 2 * var(--space-3) + 2px + var(--solution-code-size) * var(--leading-code));
+  /* Cloudflare Turnstile footprints: flexible/normal widgets are 65px tall and at least 300px wide; compact is 150x140. */
+  --widget-regular-w: 300px;
+  --widget-regular-h: 65px;
+  --widget-compact-w: 150px;
+  --widget-compact-h: 140px;
+}
+
+/* Operator puzzles must show "==" and "^=" as separate glyphs. The `font` shorthand would
+   reset these two properties to normal, so this file only uses the font-* longhands. */
+* {
+  box-sizing: border-box;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+  line-height: var(--leading);
+  color: var(--fg);
+  background: var(--bg);
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+/* Headings may carry user logins (solution authors); an unbreakable one wraps instead of widening the document (V099). */
+h1 { font-size: var(--text-xl); margin: var(--space-2) 0; overflow-wrap: anywhere; }
+h2 { font-size: var(--text-lg); margin: var(--space-5) 0 var(--space-2); overflow-wrap: anywhere; }
+h3 { font-size: var(--text-md); margin: var(--space-5) 0 var(--space-2); overflow-wrap: anywhere; }
+p { margin: var(--space-2) 0; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }
+
+.mono, pre, code, kbd { font-family: var(--font-mono); }
+.muted { color: var(--fg-faint); }
+.ok { color: var(--ok); }
+.bad { color: var(--bad); }
+.warn { color: var(--warn); }
+
+/* nav (V002/V003/V007): one banner holding the logo, the named site navigation and the account region. Wide layouts keep
+   the W3 single row; below 800px the logo/account row comes first and the navigation wraps onto its own row, so every
+   destination and account action stays visible without a menu or sideways scrolling. Every header control is a padded
+   >= 44px box; hover/pressed fills paint that box, so the layout rect never changes (V056, U44). */
+.nav {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "logo links user";
+  align-items: center;
+  column-gap: var(--space-2);
+  min-height: var(--nav-h);
+  padding: 0 var(--space-6);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.nav a, .nav .link-btn { display: inline-flex; align-items: center; min-block-size: var(--target-min); min-inline-size: var(--target-min); padding: 0 var(--space-2); border-radius: var(--radius-xs); white-space: nowrap; }
+/* Every header anchor is a navigation link, including the login prompt's inline links (V086): no resting underline,
+   no prose hit-box margins and no mid-word breaks, so they share the row contract of the destinations. */
+.nav a { color: var(--fg-muted); text-decoration: none; margin-block: 0; overflow-wrap: normal; }
+.nav a:hover { text-decoration: none; color: var(--fg); background: var(--line); }
+.nav a:active { color: var(--fg); background: var(--border); }
+.nav a.active { color: var(--fg); font-weight: 600; }
+.nav .logo { grid-area: logo; margin-inline-start: calc(-1 * var(--space-2)); font-family: var(--font-mono); font-weight: 700; font-size: var(--text-lg); color: var(--fg); }
+.nav .logo span { color: var(--accent); }
+.nav-links { grid-area: links; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1); min-width: 0; }
+/* Account region (V017/V097): one reserved row at least --target-min tall at every breakpoint holds "Checking your
+   session", the identity with Log out, "Log in with GitHub" or the recovery notice with Retry, so resolving the session
+   never moves the logo, the destinations or the content. Items shrink and wrap their own text inside that row instead of
+   stacking extra rows: a long login wraps beside its decorative avatar, so the complete name is readable without hover
+   or sideways scrolling, and only a name taller than the row adds height. */
+.nav-user { grid-area: user; display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3); min-width: 0; min-block-size: var(--target-min); margin-inline-end: calc(-1 * var(--space-2)); }
+.nav-user a { white-space: normal; }
+.nav-user > .link-btn { flex: none; } /* Log out keeps its whole label; the identity beside it is what shrinks and wraps */
+.nav-user { flex-wrap: wrap; }
+.nav-logout { min-inline-size: 7rem; }
+.account-status { flex-basis: 100%; }
+.account-status .state-view { padding: 0; }
+/* The signed-out prompt's login and Privacy links sit directly in the account row; the signed-in identity is the Account
+   link to the privacy section (V086) and keeps its text budget: its hover fill reaches 4px past the avatar and login. */
+.nav-user .auth-prompt { display: contents; }
+.nav-identity { display: flex; align-items: center; gap: var(--space-2); }
+.nav-user .nav-identity { flex: 1 1 0%; min-inline-size: 0; padding-inline: var(--space-1); margin-inline: calc(-1 * var(--space-1)); }
+.nav-login { color: var(--fg); overflow-wrap: anywhere; }
+.avatar { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--border); }
+.link-btn { display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; padding: 0; color: var(--fg-muted); border-radius: var(--radius-xs); }
+.link-btn:hover { color: var(--fg); background: var(--line); box-shadow: 0 0 0 var(--space-2) var(--line); }
+.link-btn:active { color: var(--fg); background: var(--border); box-shadow: 0 0 0 var(--space-2) var(--border); }
+
+/* layout */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+.main > * { min-width: 0; }
+.main:focus-visible { outline-offset: calc(-1 * var(--focus-width)); } /* the skip-link target's ring stays inside the viewport */
+.main.single { grid-template-columns: 1fr; max-width: 880px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--space-5); }
+.card > :first-child { margin-top: 0; }
+
+/* tags and chips */
+.tag {
+  display: inline-block;
+  font-size: var(--text-xs);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--tag-bg);
+  color: var(--tag-fg);
+  margin-right: 6px;
+}
+.tag.solved { background: var(--solved-bg); color: var(--solved-fg); }
+.chips span {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) 10px;
+  margin: var(--space-1) 6px 0 0;
+  font-size: var(--text-sm);
+}
+/* Reading prose (V033): statements, About paragraphs and lists share the --measure line length and wrap long tokens. */
+.statement { white-space: pre-wrap; max-inline-size: var(--measure); overflow-wrap: anywhere; }
+.prose, .prose :is(p, ul, ol, li, blockquote), .about :is(p, ul, ol, li) { max-inline-size: var(--measure); overflow-wrap: anywhere; }
+
+/* lists and tables */
+.lb div { display: flex; justify-content: space-between; gap: var(--space-3); padding: 6px 0; border-bottom: 1px solid var(--line); }
+.lb .who { min-width: 0; overflow-wrap: anywhere; } /* long logins wrap instead of an ellipsis with hover-only discovery (V072) */
+.credit { color: var(--fg-faint); font-size: var(--text-xs); margin-top: 18px; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; font-weight: 600; color: var(--fg-muted); font-size: var(--text-sm); }
+.table th, .table td { padding: var(--space-2) var(--space-2); border-bottom: 1px solid var(--line); vertical-align: top; }
+/* Shared table contracts (U70): numeric columns right-aligned with stable digits, a compact index column, titles that
+   wrap normally, budgets on one line, and generous block anchors inside cells (V020/V021/V022). */
+.table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.table .index { width: 1%; white-space: nowrap; }
+.table .title-cell { min-width: 0; }
+.table .limit-cell { white-space: nowrap; }
+/* Comparative numerals (V023, U70): a number read against the numbers around it keeps one width per digit, so columns
+   line up and a changing value never moves its neighbours. Tables (every cell: index, budget, count, time and problem
+   links), the shortest list and the editor counter take tabular figures directly; .numeric is the same contract for
+   inline values outside a .num cell, such as the wave-2 phone catalog/history rows. The counter keeps its data-testid
+   hook until the canonical ui/Editor (todo 19) can carry .numeric. Only figure spacing changes: code stays in
+   --font-mono and the ligature policy above still applies. */
+.numeric, .table, .lb, .ed-head [data-testid="counter"] { font-variant-numeric: tabular-nums; }
+.table-wrap { min-width: 0; max-width: 100%; overflow: auto; }
+.table-wrap:focus-visible { outline-offset: calc(-1 * var(--focus-width)); }
+/* A table that is not inside .table-wrap yet (the leaderboard, inside its state frame) wraps long cell text so it cannot
+   widen the document (V076). */
+.card > .table td, .state-frame > .table td { overflow-wrap: anywhere; }
+.cell-link { display: block; min-inline-size: var(--target-min); padding: var(--space-2); margin: calc(-1 * var(--space-2)); border-radius: var(--radius-xs); }
+.long-string { min-width: 0; overflow-wrap: anywhere; }
+
+/* Inline prose links: underlined at rest (V089); hover thickens the line without moving anything (U44). */
+.inline-link { display: inline-block; max-inline-size: 100%; overflow-wrap: anywhere; color: var(--link); text-decoration: underline; text-decoration-thickness: from-font; text-underline-offset: .15em; border-radius: var(--radius-xs); }
+.inline-link:hover { text-decoration-thickness: 2px; }
+/* An in-page action that reads like the inline links beside it (an empty state's "Focus your code"): the same color,
+   underline and phone hit box as an anchor, without the button chrome. :where() keeps the reset at the class's own
+   specificity so the phone hit-box padding below still wins. */
+.inline-link:where(button) { appearance: none; background: none; border: 0; padding: 0; margin: 0; text-align: start; }
+.ed .inline-link { color: var(--editor-link); }
+.help-action { padding-block: var(--space-3); margin: 0; }
+
+/* Boot recovery works without JavaScript; route recovery shares the same touch-sized actions. */
+.recovery-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-block-start: var(--space-4); }
+.recovery-actions a { display: inline-flex; align-items: center; min-block-size: var(--target-min); padding-inline: var(--space-2); }
+
+/* Login prompts (ui/AuthPrompt, V086/V100): the login action beside its note and Privacy link, wrapping on narrow
+   widths. In the editor footer the prompt takes the Submit button's place without its own paragraph spacing. */
+.auth-prompt { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin: var(--space-2) 0; }
+.auth-prompt > * { min-width: 0; margin: 0; }
+.ed-foot .auth-prompt { margin: 0; }
+
+/* Account deletion completion (ui/DeletionCompletionNotice, V085 handoff): one polite status between the header and the
+   route content, aligned with the main landmark; the region is always present and empty until the message lands. */
+.completion-notice { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--space-6); }
+.completion-notice p { margin: var(--space-4) 0 0; padding: var(--space-3) var(--space-4); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+
+/* Assistive-technology-only text and the first-Tab skip link (V002 enabler). */
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.skip-link { position: absolute; inset-inline-start: var(--space-3); inset-block-start: var(--space-3); z-index: 10; display: inline-flex; align-items: center; min-block-size: var(--target-min); padding: var(--space-2) var(--space-4); background: var(--card); color: var(--link); border: 1px solid var(--border); border-radius: var(--radius-sm); text-decoration: underline; }
+.skip-link:not(:focus) { width: 1px; height: 1px; min-block-size: 0; margin: -1px; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Route state primitives (todo 8-10 enablers): a message block with its actions, and frames that reserve the geometry
+   ready content will take (U35). --table: a header row plus five data rows; --solutions: five solution blocks;
+   --problem: the problem card head (badge line, h1, a three-line statement, one chips row). */
+.state-view { display: grid; gap: var(--space-2); justify-items: start; padding: var(--space-3) 0; color: var(--fg-muted); }
+.state-view > * { margin: 0; min-width: 0; max-inline-size: var(--measure); }
+.state-view.bad { color: var(--bad); }
+.state-view.warn { color: var(--warn); }
+.ed .state-view { color: var(--editor-muted); }
+.state-frame { display: grid; align-content: start; gap: var(--space-2); min-width: 0; }
+.state-frame > * { min-width: 0; } /* grid items would otherwise take their min-content width and let long code widen the page */
+.state-frame--table { min-block-size: calc(var(--table-head-h) + 5 * var(--table-row-h)); }
+.state-frame--solutions { min-block-size: calc(5 * var(--solution-row-h)); }
+.state-frame--problem { min-block-size: calc(var(--text-xs) * var(--leading) + var(--space-1) + var(--space-2) + var(--text-xl) * var(--leading) + var(--space-2) + 3 * var(--statement-size) * var(--leading) + var(--space-2) + var(--text-sm) * var(--leading) + 2 * var(--space-1) + 2px + var(--space-1)); }
+
+/* Loading placeholders (V008): aria-hidden structural stand-ins reuse the real content's classes, so they inherit its
+   grid, padding and font metrics; .bar is a text-shaped block sized by --bar-w in the host font's ch or em. The route
+   status/alert (StateView) overlays the first reserved slot of a table or solutions frame and fills the statement slot of
+   the problem frame, so a held frame and its ready content have the same height. Placeholders are never controls. */
+.placeholder { user-select: none; pointer-events: none; }
+.bar { display: inline-block; vertical-align: middle; inline-size: var(--bar-w, 8ch); max-inline-size: 100%; block-size: 1em; border-radius: var(--radius-xs); background: var(--border); }
+.ed .bar { background: var(--editor-border); }
+.placeholder pre .bar { max-inline-size: calc(100% - 2ch); } /* a code line never overflows its two-space indent */
+/* The editor silhouette scrolls like the real skeleton: its bars keep their widths so it overflows (and reserves the hint
+   line) under the same conditions, while the hint text itself stays invisible like every other placeholder label. */
+.placeholder .scroll-region .bar { max-inline-size: none; }
+.placeholder .scroll-hint { visibility: hidden; }
+.placeholder-text { visibility: hidden; } /* sizes a slot or action box with the real label's metrics without showing it */
+.placeholder .slot { display: inline-block; cursor: default; }
+.placeholder .btn { background: var(--btn-disabled); cursor: default; }
+.ed.placeholder .btn { background: var(--editor-border); }
+.placeholder .turnstile { min-block-size: var(--widget-regular-h); } /* the flexible widget's height before the script inserts it */
+.placeholder-slot { min-block-size: 1lh; } /* the empty first solution heading the status overlays */
+.state-frame > .placeholder, .state-frame > .placeholder + .state-view { grid-area: 1 / 1; }
+.state-frame > .placeholder + .state-view { align-self: start; padding: 0; background: var(--card); }
+/* Table rows reserve --table-row-lines text lines each (one at desktop); the phone values below are the measured
+   five-row fixture rows: the catalog wraps its Limit column and the history wraps its timestamp and message. */
+.state-frame--table { --table-row-lines: 1; }
+.state-frame--history { --table-row-lines: 2; }
+.placeholder-table td { block-size: calc(var(--table-row-lines) * 1lh + 2 * var(--space-2) + 1px); }
+/* History rows include the message and closed attempt disclosure, separated by its top margin. */
+.state-frame--history .placeholder-table td { block-size: calc(var(--table-row-lines) * 1lh + 3 * var(--space-2) + 1px); }
+.state-frame--table > .placeholder + .state-view { margin-block-start: var(--table-head-h); min-block-size: calc(var(--table-row-lines) * 1lh + 2 * var(--space-2)); padding: 0 var(--space-2); align-content: center; }
+.state-frame--solutions > .placeholder + .state-view { margin-block-start: var(--space-5); min-block-size: 1lh; }
+/* The problem frame keeps the card's own flow: badge, h1, the statement slot that hosts the status, then placeholders. */
+.statement-slot { margin: var(--space-2) 0; font-size: var(--statement-size); min-block-size: 3lh; }
+.statement-slot > .state-view { padding: 0; }
+
+/* Local scrollers (V028/V093, ui/ScrollRegion): the region scrolls natively; the hint names the gesture and is rendered
+   only while the content overflows. The sizing box around the content takes the longest line (or a table's narrowest
+   layout) and never less than the scroller, so a ResizeObserver on it sees every overflow change. The focus ring is
+   inset so overflow-hidden parents (the editor panel) cannot clip it; the diagnostics scroller sits 16px inside the
+   console, so its ring can stay outside like every other control's. */
+.scroll-region { position: relative; min-width: 0; max-width: 100%; overflow: auto; }
+.scroll-region:focus-visible { outline-offset: calc(-1 * var(--focus-width)); }
+.ed-con .scroll-region:focus-visible { outline-offset: var(--focus-offset); }
+.scroll-content { display: block; width: fit-content; min-width: 100%; }
+.scroll-hint { display: block; font-size: var(--text-sm); color: var(--fg-muted); padding: var(--space-1) 0; }
+.ed .scroll-hint { color: var(--editor-muted); }
+.ed > .scroll-hint { padding: 0 var(--space-4) var(--space-3); }
+
+/* dark editor panel */
+.ed { background: var(--editor-bg); border: 1px solid var(--editor-border); border-radius: var(--radius); color: var(--editor-fg); overflow: hidden; }
+.ed .ok { color: var(--editor-ok); }
+.ed .bad { color: var(--editor-bad); }
+.ed .warn { color: var(--editor-warn); }
+.ed .muted { color: var(--editor-muted); }
+.ed :focus-visible { outline-color: var(--slot-outline); }
+.ed-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); padding: 10px var(--space-4); border-bottom: 1px solid var(--editor-border); font-size: var(--text-sm); color: var(--editor-muted); }
+.ed pre { margin: 0; padding: var(--space-4); font-size: var(--text-md); line-height: var(--leading-code); overflow-x: auto; tab-size: 2; }
+.slot {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: #fff;
+  background: var(--slot-bg);
+  outline: 1px solid var(--slot-outline);
+  border: 0;
+  border-radius: var(--radius-xs);
+  padding: 0 3px;
+  margin: 0;
+  vertical-align: top;
+  white-space: pre;
+  resize: none;
+  overflow: auto; /* the native field scrolls its own value; nothing is hidden (V038 enabler) */
+  cursor: text;
+}
+.slot-multiline { max-block-size: 50svh; overflow: auto; } /* bounded multiline growth with local scrolling (V041 enabler) */
+.slot::placeholder { color: var(--editor-muted); opacity: 1; }
+.slot:hover { background: var(--slot-bg-hover); }
+.slot:focus-visible { outline: 2px solid var(--slot-outline); outline-offset: 0; }
+.ed-row { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--editor-border); container-type: inline-size; font-size: var(--text-sm); }
+/* Verification frame (V047/V094 enabler): reserves the widget footprint before the script inserts anything, using the
+   row width it sits in: 300x65 (flexible/normal) when the frame is at least 300px wide, else 150x140 (compact), plus one
+   status line below the widget so lifecycle text never moves the footer. Keep the status element mounted at all times. */
+.verification-frame { container-type: inline-size; display: grid; gap: var(--space-2); justify-items: start; min-block-size: calc(var(--widget-regular-h) + var(--space-2) + 1lh); }
+.verification-frame > * { min-width: 0; margin: 0; }
+.verification-frame .turnstile { inline-size: 100%; min-inline-size: min(var(--widget-regular-w), 100%); min-block-size: var(--widget-regular-h); }
+.verification-frame [role="status"] { min-block-size: 1lh; }
+@container (width < 300px) {
+  .verification-frame { min-block-size: calc(var(--widget-compact-h) + var(--space-2) + 1lh); }
+  .verification-frame .turnstile { inline-size: var(--widget-compact-w); min-inline-size: 0; min-block-size: var(--widget-compact-h); }
+}
+/* Human check caption (V048, ui/HumanCheck): the group's visible name and one-sentence explanation above the widget;
+   the editor placeholder repeats the same line hidden, so the action stays put between loading and ready. */
+.human-check-caption strong { color: var(--editor-fg); font-weight: 600; }
+/* The footer wraps instead of clipping: long feedback takes the first line and the action moves below it (V036 enabler). */
+.ed-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-top: 1px solid var(--editor-border); font-size: var(--text-sm); }
+.ed-foot > * { min-width: 0; }
+.ed-checks { flex: 1 1 12ch; min-block-size: 4.5em; overflow-wrap: anywhere; } /* reserved feedback space keeps Submit still (V041 enabler) */
+.ed-status { display: block; min-block-size: var(--target-min); white-space: normal; overflow-wrap: anywhere; } /* judging status stays visible and wraps (V060 enabler) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--btn);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 7px var(--space-4);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.btn:hover { text-decoration: none; }
+/* Hover/pressed only change the fill; they exclude disabled and aria-disabled controls so the disabled rules below win
+   regardless of order. Disabled text keeps a >= 4.5:1 pair instead of opacity dimming (V054). */
+.btn:hover:not(:disabled, [aria-disabled="true"]) { background: var(--btn-hover); }
+.btn:active:not(:disabled, [aria-disabled="true"]) { background: var(--btn-active); }
+.btn.danger { background: var(--danger); }
+.btn.danger:hover:not(:disabled, [aria-disabled="true"]) { background: var(--danger-hover); }
+.btn.danger:active:not(:disabled, [aria-disabled="true"]) { background: var(--danger-active); }
+.btn:is(:disabled, [aria-disabled="true"]), .btn.danger:is(:disabled, [aria-disabled="true"]) { background: var(--btn-disabled); color: var(--btn-disabled-fg); cursor: not-allowed; }
+.ed .btn:is(:disabled, [aria-disabled="true"]) { background: var(--editor-border); color: var(--editor-fg); }
+.ed-con { padding: var(--space-3) var(--space-4); border-top: 1px solid var(--editor-border); font-family: var(--font-mono); font-size: var(--text-sm); min-height: var(--target-min); overflow-wrap: anywhere; }
+.ed-con details { margin-top: var(--space-2); }
+.ed-con summary { cursor: pointer; color: var(--editor-muted); border-radius: var(--radius-xs); }
+.ed-con summary:hover { color: var(--editor-fg); background: var(--editor-border); box-shadow: 0 0 0 var(--space-1) var(--editor-border); }
+.ed-con summary:active { color: var(--editor-bg); background: var(--editor-muted); box-shadow: 0 0 0 var(--space-1) var(--editor-muted); }
+.ed-con details pre { padding: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--editor-muted); }
+
+/* Judge environment (V031, ui/JudgeEnvironment): one native disclosure mounted in the editor head and on About. The
+   summary is the control and keeps a plain text line box, so the closed head has the geometry its loading silhouette
+   mirrors; on phones its padded hit box reaches --target-min the same way .inline-link does, without moving the line.
+   The facts are a label/value grid (stacked on phones) and the flags keep their exact one-line form in a named local
+   scroller. Light-surface tones by default; the editor overrides below use its own palette. */
+.env { min-width: 0; }
+.env > summary, .disclosure-summary { width: fit-content; max-width: 100%; cursor: pointer; font-weight: 600; border-radius: var(--radius-xs); }
+.env > summary:hover, .disclosure-summary:hover { background: var(--line); box-shadow: 0 0 0 var(--space-1) var(--line); }
+.env > summary:active, .disclosure-summary:active { background: var(--border); box-shadow: 0 0 0 var(--space-1) var(--border); }
+.env-facts { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: var(--space-4); row-gap: var(--space-1); margin: var(--space-2) 0 0; max-inline-size: var(--measure); font-size: var(--text-md); }
+.env-facts dt { color: var(--fg-muted); font-weight: 600; }
+.env-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.env-facts code { white-space: nowrap; } /* the standard flag reads as one token */
+.env-flags { margin: 0; padding: var(--space-2) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg); font-family: var(--font-mono); font-size: var(--text-sm); line-height: var(--leading-code); white-space: pre; }
+.env-actions { margin: var(--space-2) 0 0; }
+.ed .env { flex: 1 1 auto; }
+.ed-head > :last-child { flex: none; white-space: nowrap; } /* the counter never wraps or shrinks beside the open disclosure */
+.ed .env > summary { color: var(--editor-muted); }
+.ed .env > summary:hover { color: var(--editor-fg); background: var(--editor-border); box-shadow: 0 0 0 var(--space-1) var(--editor-border); }
+.ed .env > summary:active { color: var(--editor-bg); background: var(--editor-muted); box-shadow: 0 0 0 var(--space-1) var(--editor-muted); }
+.ed .env-facts { color: var(--editor-fg); }
+.ed .env-facts dt { color: var(--editor-muted); }
+.ed .env-flags { padding: var(--space-2) var(--space-3); border-color: var(--editor-border); background: transparent; font-size: var(--text-sm); line-height: var(--leading-code); }
+.ed .env-return { color: var(--editor-link); }
+.ed .env-return:hover { color: var(--editor-fg); background: var(--editor-border); box-shadow: 0 0 0 var(--space-2) var(--editor-border); }
+.ed .env-return:active { color: var(--editor-bg); background: var(--editor-muted); box-shadow: 0 0 0 var(--space-2) var(--editor-muted); }
+
+/* user code shown on light surfaces (solutions page) */
+.code-light { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: var(--space-3); margin: var(--space-2) 0 0; overflow-x: auto; font-size: var(--text-sm); line-height: var(--leading-code); }
+
+/* Historical source never contributes its longest line to the table's intrinsic width: the detail body fills the
+   allocated message cell, while each exact pre owns its horizontal scroll. Keep one history row per attempt. */
+.attempt-details { margin-block-start: var(--space-2); min-inline-size: min(18rem, calc(100vw - 2 * var(--space-3) - 2 * var(--space-5) - 2 * var(--space-2) - var(--space-1))); }
+.attempt-body { inline-size: 0; min-inline-size: 100%; overflow-wrap: anywhere; }
+.attempt-body p { margin: var(--space-2) 0; }
+.attempt-message { white-space: pre-wrap; }
+.attempt-output pre { font-size: var(--text-sm); }
+
+.notice { color: var(--fg-muted); padding: var(--space-3) 0; }
+/* Tone notices are scoped so the neutral notice color cannot win the equal-specificity cascade (V011, V075). */
+.notice.bad { color: var(--bad); }
+.notice.warn { color: var(--warn); }
+.about ul { padding-left: 20px; }
+
+/* Problem layout (V035 enabler): DOM order primary (statement, constraints), editor, secondary (comparisons, credit).
+   Desktop keeps the W3 two-column composition with the editor spanning the right column; narrow widths follow DOM order. */
+.editor-layout { display: grid; grid-template-columns: 1fr 1fr; grid-template-areas: "primary editor" "secondary editor"; gap: var(--space-4); }
+.editor-layout > * { min-width: 0; }
+/* :where() keeps these placements at the same specificity as the narrow reset below, so the reset wins there. */
+.editor-layout > :where(.editor-primary) { grid-area: primary; }
+.editor-layout > :where(.editor-secondary) { grid-area: secondary; }
+.editor-layout > :where(:not(.editor-primary, .editor-secondary)) { grid-area: editor; }
+
+@media (max-width: 800px) {
+  .main { grid-template-columns: 1fr; padding: var(--space-3); }
+  .completion-notice { padding: 0 var(--space-3); }
+  .completion-notice p { margin-block-start: var(--space-3); }
+  .editor-layout { grid-template-columns: 1fr; grid-template-areas: none; }
+  .editor-layout > * { grid-area: auto; }
+  .nav { grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "logo user" "links links"; padding: var(--space-1) var(--space-4) var(--space-2); }
+  .nav-user { min-block-size: max(var(--target-min), 2lh); }
+  .nav-links { margin-inline: calc(-1 * var(--space-2)); } /* the destinations' text aligns with the logo text, like the logo and account rows */
+  .btn { min-height: var(--target-min); } /* primary and destructive actions reach the 44px touch floor (V053) */
+}
+
+/* Phone reading floors (V029): prose and studied code at 1rem, diagnostics and credit at .8125rem.
+   600px is the phone breakpoint shared with the catalog and history layouts; 800px above only switches columns. */
+@media (max-width: 600px) {
+  :root { --statement-size: var(--text-base); --solution-code-size: var(--text-base); }
+  .state-frame--catalog { --table-row-lines: 2; }
+  .state-frame--history { --table-row-lines: 4; }
+  .statement, .about p, .about li, .ed pre, .code-light { font-size: var(--text-base); }
+  .ed-con details pre, .credit { font-size: var(--text-sm); }
+
+  /* Phone hit areas (U41): every inline anchor or link-like control reaches 44x44 without moving its line box. Inline
+     links pad their block edges and take the same amount back as negative margin, so the padded box is --target-min
+     tall (plus 1px so layout-unit rounding never lands just under it) while surrounding lines stay put; short labels
+     widen to --target-min. Two inline links in consecutive lines share (44px - line height) of hit area, so keep
+     neighbouring links on one line or a text line apart. */
+  .inline-link { min-inline-size: var(--target-min); padding-block: calc((var(--target-min) + 1px - 1lh) / 2); margin-block: calc((1lh - var(--target-min) - 1px) / 2); }
+  .link-btn { min-block-size: var(--target-min); min-inline-size: var(--target-min); padding: 0 var(--space-2); }
+  .cell-link { display: flex; align-items: center; min-block-size: var(--target-min); }
+  .slot { min-block-size: var(--target-min); } /* the code field itself is the 44px touch target (V039 enabler) */
+  .env > summary { padding-block: calc((var(--target-min) + 1px - 1lh) / 2); margin-block: calc((1lh - var(--target-min) - 1px) / 2); }
+  .disclosure-summary { min-inline-size: var(--target-min); min-block-size: var(--target-min); padding-block: calc((var(--target-min) - 1lh) / 2); }
+  .ed-head { padding-block: var(--space-3); } /* room for the summary's padded hit box above the panel's clipped edge */
+  .env-facts { grid-template-columns: minmax(0, 1fr); row-gap: 0; margin-block-start: var(--space-5); font-size: var(--text-base); } /* the facts start below the summary's hit box */
+  .env-facts dd { margin-block-end: var(--space-2); }
+  .env-facts dd:last-child { margin-block-end: 0; }
+}
+
+/* Forced colors (U17): fills disappear, so borders and outlines carry the control, badge and focus boundaries. */
+@media (forced-colors: active) {
+  :focus-visible { outline: var(--focus-width) solid CanvasText; outline-offset: var(--focus-offset); }
+  .table-wrap:focus-visible, .scroll-region:focus-visible { outline-offset: calc(-1 * var(--focus-width)); }
+  .slot:focus-visible { outline: var(--focus-width) solid CanvasText; outline-offset: 0; }
+  .btn, .tag, .skip-link, .slot { border: 1px solid currentColor; }
+  .btn:is(:disabled, [aria-disabled="true"]) { color: GrayText; border-color: GrayText; }
+  .inline-link, .cell-link, .nav a, .link-btn { text-decoration: underline; }
+}
+
+/* Basic C++ token colours (web/src/ui/highlight.tsx); every pair is at least 4.5:1 on its surface. */
+:root {
+  --tok-kw: #ff7b72; --tok-type: #ffa657; --tok-num: #79c0ff; --tok-str: #a5d6ff; --tok-com: #8b949e; --tok-pp: #d2a8ff;
+  --tok-light-kw: #cf222e; --tok-light-type: #953800; --tok-light-num: #0550ae; --tok-light-str: #0a3069; --tok-light-com: #59636e; --tok-light-pp: #8250df;
+}
+.ed pre .tok-kw { color: var(--tok-kw); }
+.ed pre .tok-type { color: var(--tok-type); }
+.ed pre .tok-num { color: var(--tok-num); }
+.ed pre .tok-str { color: var(--tok-str); }
+.ed pre .tok-com { color: var(--tok-com); font-style: italic; }
+.ed pre .tok-pp { color: var(--tok-pp); }
+.code-light .tok-kw { color: var(--tok-light-kw); }
+.code-light .tok-type { color: var(--tok-light-type); }
+.code-light .tok-num { color: var(--tok-light-num); }
+.code-light .tok-str { color: var(--tok-light-str); }
+.code-light .tok-com { color: var(--tok-light-com); font-style: italic; }
+.code-light .tok-pp { color: var(--tok-light-pp); }

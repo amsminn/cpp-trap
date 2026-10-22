@@ -1,0 +1,44 @@
+/* About page sheet (pages/About.tsx imports it). Every rule is scoped to .about (including the account deletion dialog,
+   which About renders inside its own main), so nothing here reaches another route or overrides the shared tokens and
+   primitives in styles.css. */
+
+/* Credit resources (V088): each of the three resource anchors is its own padded inline-flex hit box at every viewport,
+   at least --target-min square with the label centred, so a tap or click anywhere in that padding activates exactly
+   that link. The padding sits on the anchor, not the list item; its inline part is taken back as negative margin so the
+   label stays aligned with the list text, while its block part is real and grows the line, which keeps consecutive
+   anchors the list's --space-2 apart and lets the explanation after the first link share its baseline. A long or
+   unbroken label wraps inside the box (the shared .inline-link overflow-wrap is inherited) and never widens its item.
+   The reading measure, resting underline, thicker hover underline and focus ring come from the shared .about and
+   .inline-link rules and are not repeated here. */
+
+/* Account region (V081): one named subsection after the policy list shows exactly one session state at a time - the
+   busy "Checking your session" status, the lookup error with its Retry, the signed-in deletion action, or the
+   signed-out login prompt. It is the same bordered box the completion notice uses, so the state is read as the
+   account's, not as policy prose. The state slot reserves a resolved state's height (one text line plus a touch-sized
+   action) so the end of the card does not jump when the session resolves. */
+.about .account { margin-block-start: var(--space-5); padding: var(--space-3) var(--space-4); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.about .account > h3 { margin-block-start: 0; }
+.about .account-state { min-block-size: calc(1lh + 2 * var(--space-2) + var(--target-min)); }
+.about .account-state > :last-child { margin-block-end: 0; }
+/* Deletion actions (V084/V085): the page row holds the opener ("Delete my account", or "Retry deletion" after a failed
+   request) and, after a failure, the secondary Cancel; the dialog row holds Cancel and the destructive confirmation.
+   Both rows wrap instead of pushing sideways. The text-style secondary action gets the primary button's block padding
+   so the two controls share one height; the phone breakpoint's shared .link-btn rule still raises it to --target-min. */
+.about .account-actions, .about .account-delete-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.about .account-delete-actions { justify-content: flex-end; margin-block-start: var(--space-4); }
+.about :is(.account-actions, .account-delete-actions) .link-btn { padding: 7px var(--space-3); }
+
+/* Confirmation dialog (V084): the native modal is the same card surface as the page, sized to the reading measure and
+   centred by the UA's modal placement; its backdrop dims the inert page with the text colour at half strength. */
+.about .account-delete { inline-size: 32rem; max-inline-size: calc(100% - 2 * var(--space-4)); margin: auto; padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--fg); }
+.about .account-delete::backdrop { background: color-mix(in srgb, var(--fg) 48%, transparent); }
+.about .account-delete > h2 { margin-block-start: 0; }
+/* The pending announcement lands in a reserved line between the consequences and the actions, so confirming never
+   moves the controls under the pointer or the focus. */
+.about .account-delete-status { min-block-size: 1lh; color: var(--fg-muted); }
+
+/* Pending deletion (V085, and the /about half of V054): while the request is in flight the destructive controls are
+   aria-disabled and painted with the shared disabled pair (--btn-disabled fill, --btn-disabled-fg text, 5.2:1),
+   visibly different from the enabled --danger red. The shared hover/pressed fills exclude aria-disabled controls, so
+   the pointer never restores the red. */
+.about .btn.danger[aria-disabled="true"] { background: var(--btn-disabled); color: var(--btn-disabled-fg); }

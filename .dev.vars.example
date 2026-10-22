@@ -1,0 +1,6 @@
+# Copy to .dev.vars for local development; never commit real secrets.
+GITHUB_ID=
+GITHUB_SECRET=
+SESSION_PEPPER=
+# Always-pass test secret. The testing-key hostname exception is localhost-only.
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA

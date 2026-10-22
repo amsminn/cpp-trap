@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cpp-trap",
+  "main": "api/src/index.ts",
+  "compatibility_date": "2026-10-18",
+  "assets": {
+    "directory": "./web/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/*", "!/assets/*", "!/fonts/*", "!/favicon.svg", "!/og.png"]
+  },
+  "ratelimits": [
+    { "name": "RATE_LIMIT", "namespace_id": "1001", "simple": { "limit": 5, "period": 60 } }
+  ],
+  "containers": [
+    {
+      "class_name": "Judge",
+      "image": "./judge/Dockerfile",
+      "image_build_context": ".",
+      "instance_type": "basic",
+      "max_instances": 1
+    }
+  ],
+  "durable_objects": {
+    "bindings": [{ "name": "JUDGE", "class_name": "Judge" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Judge"] }],
+  "vars": {
+    "DAILY_LIMIT": "2000",
+    "USER_DAILY_LIMIT": "200",
+    "SUBMISSIONS_ENABLED": "true"
+  },
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cpp-trap",
+      "database_id": "91aaa960-6c75-452f-b2f2-8ef6c3c96475",
+      "migrations_dir": "api/migrations"
+    }
+  ]
+}
