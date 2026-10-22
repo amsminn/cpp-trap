@@ -2,6 +2,16 @@
 
 How C++ Trap is deployed, configured, limited and kept safe. The README covers local development.
 
+## Judge environment
+
+The judge reproduces the inferred environment of the original Security Traps C++ judge (2010-2021):
+Linux x86-64, glibc, GCC 4.x, `-O0`, strict C++11 and no stack protector.
+
+- Compiler: GCC 4.9.4 from the digest-pinned official `gcc:4.9` image, installed in `/opt/gcc-4.9` on the Ubuntu 24.04 runtime (glibc 2.39). Details and pins: [`judge/README.md`](../judge/README.md).
+- Base flags: `-std=c++11 -O0 -fno-stack-protector -w -fmax-errors=5` (`shared/src/contract.ts`).
+- Why: an original solution to #7 uses the trigraph `??/`, which GCC translates only in strict ISO modes; a lambda worked on the site, so the mode was at least C++11; #5's `&x+3` return-address offset matches an x86-64 frame; #8 assigns `stderr = stdout`, which glibc allows; the site ran from 2010, when distributions shipped GCC 4.x.
+- Known gaps: solutions that depend on the exact byte layout of the original hidden harness (for example #5 `+33`, #6 `7[&x]`) still fail, because the harness is reconstructed. Each known original solution and its outcome on this judge is recorded in the private puzzle data (`alternatives.yaml`) and checked by the real-judge suite on every deploy.
+
 ## Deploy and configuration
 
 The app and problems pipelines check pushes/PRs and manual runs on Ubuntu x86-64.
