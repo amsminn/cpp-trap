@@ -16,12 +16,12 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License: MIT"></a>
   <a href="https://github.com/amsminn/cpp-trap/actions/workflows/deploy.yml"><img src="https://github.com/amsminn/cpp-trap/actions/workflows/deploy.yml/badge.svg" alt="Check and deploy"></a>
   <a href="https://cpp-trap.kim1109123.workers.dev"><img src="https://img.shields.io/badge/play-cpp--trap.kim1109123.workers.dev-0d1117" alt="Play C++ Trap"></a>
-  <img src="https://img.shields.io/badge/judge-GCC%2013%20·%20x86--64-blue" alt="Judge: GCC 13 on x86-64">
+  <img src="https://img.shields.io/badge/judge-GCC%204.9%20·%20C%2B%2B11%20·%20x86--64-blue" alt="Judge: GCC 4.9, C++11, x86-64">
 </div>
 
 <br>
 
-C++ Trap is a web judge for the 14 C++ Trap puzzles by Mawekl, first published on Security Traps (securitytraps.pl). Every puzzle gives you a small C++ program with one empty slot. Fill the slot within tight limits (a character budget, banned tokens, a semicolon cap) so that the program reaches its goal, usually calling `victory()`. Submissions compile with a pinned GCC 13 and run in a sandboxed container on Cloudflare.
+C++ Trap is a web judge for the 14 C++ Trap puzzles by Mawekl, first published on Security Traps (securitytraps.pl). Every puzzle gives you a small C++ program with one empty slot. Fill the slot within tight limits (a character budget, banned tokens, a semicolon cap) so that the program reaches its goal, usually calling `victory()`. Submissions compile with a pinned GCC 4.9 in strict C++11 mode, the closest match to the original site's judge, and run in a sandboxed container on Cloudflare.
 
 > [!TIP]
 > Just want to play? Open **[cpp-trap.kim1109123.workers.dev](https://cpp-trap.kim1109123.workers.dev)**. Problems are readable without an account; sign in with GitHub to submit.
@@ -54,7 +54,7 @@ pnpm exec wrangler dev --local          # http://localhost:8787
 
 ## Why C++ Trap?
 
-- **A real judge, not a regex** — code is compiled with a pinned `g++` 13.3 on x86-64 and executed, because several puzzles depend on the exact compiler and ABI.
+- **A real judge, not a regex** — code is compiled with a pinned `g++` 4.9.4 (`-std=c++11 -O0`, no stack protector) on x86-64 glibc and executed, because several puzzles depend on the exact compiler, standard mode and ABI. Trigraphs work, as they did on the original site.
 - **A sandbox you can read** — a dedicated runner uid, `prlimit` caps, `setpriv` without capabilities, `bwrap` namespaces when available, no shell in the image and no network in the container ([`judge/README.md`](judge/README.md)).
 - **Victory you cannot fake** — the program must write a fresh 32-byte token to fd 3 from a separately compiled object; printing "victory" or exiting 0 does nothing.
 - **One set of rules everywhere** — the browser and the API validate input with the same code in `shared/`, so what the editor accepts is exactly what the judge accepts.

@@ -17,7 +17,7 @@ export type JudgeEnvironmentProps = {
   readonly onReturnToCode?: () => void;
 };
 
-/** `-std=gnu++17` reads as "C++17 with GNU extensions"; any other spelling is shown as the flag itself. */
+/** `-std=c++11` reads as "C++11" and `-std=gnu++11` as "C++11 with GNU extensions"; any other spelling is shown as the flag itself. */
 const STANDARD_FLAG = /^-std=(gnu|c)\+\+(\w+)$/;
 
 function describeStandard(flag: string): string {

@@ -36,19 +36,16 @@ export type JudgeHealth = {
 
 export const ALLOWED_FLAGS = [
   "-O0", "-O1", "-O2", "-O3", "-Os",
-  "-std=gnu++17", "-std=gnu++14", "-std=gnu++11", "-std=c++14",
-  "-trigraphs", "-fno-stack-protector", "-no-pie", "-fpermissive", "-w",
+  "-std=c++11", "-std=gnu++11", "-std=c++14", "-std=gnu++14",
+  "-trigraphs", "-fno-stack-protector", "-fpermissive", "-w",
 ] as const;
 
-// Disable CET shadow stacks so the control-flow puzzles #5 and #14 still work.
+// The inferred original environment: GCC 4.9 (non-PIE, no CET by default), strict C++11 so trigraphs are
+// translated as on the original site, -O0, and no stack protector for the stack and return-address puzzles.
 export const BASE_FLAGS = [
-  "-std=gnu++17",
+  "-std=c++11",
   "-O0",
   "-fno-stack-protector",
-  "-no-pie",
-  "-fcf-protection=none",
-  // Preserve legacy non-void fallthrough behavior used by the recovered puzzles.
-  "-fno-unreachable-traps",
   "-w",
   "-fmax-errors=5",
 ] as const;
